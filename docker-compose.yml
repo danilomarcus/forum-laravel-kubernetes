@@ -13,7 +13,7 @@ services:
 
   #  The Application
   app:
-    image: jacksonlima91/forum-app:v1
+    image: danilomarcus/forum-app:v1
     container_name: app
     ports:
         - 9000:9000
@@ -23,7 +23,7 @@ services:
       - database
   # The Web Server
   web:
-    image: jacksonlima91/forum-web:v1
+    image: danilomarcus/forum-web:v1
     container_name: web  
     ports:
       - 4000:80
