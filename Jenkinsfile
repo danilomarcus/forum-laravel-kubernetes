@@ -5,7 +5,7 @@ pipeline {
             steps {
                 sh 'cp .env.example .env'
                 sh 'docker build -t danilomarcus/forum-app:$BUILD_NUMBER .'
-                sh 'docker build -t danilomarcus/forum-app:$BUILD_NUMBER -f Dockerfile_Nginx .'
+                sh 'docker build -t danilomarcus/forum-web:$BUILD_NUMBER -f Dockerfile_Nginx .'
             }
         }        
     }
