@@ -15,7 +15,7 @@ pipeline {
             steps{
                 sh "sed -i 's/forum-app.*/forum-app:$BUILD_NUMBER/g' docker-compose.yml"
                 sh "sed -i 's/forum-web.*/forum-web:$BUILD_NUMBER/g' docker-compose.yml"
-                sh "docker-compose up -d"
+                sh "docker compose up -d"
                 sh "docker exec app vendor/bin/phpunit"
             }
         }      
