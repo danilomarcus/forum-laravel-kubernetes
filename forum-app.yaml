@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: backend
-        image: jacksonlima91/forum-app:v1
+        image: danilomarcus/forum-app:v1
         ports:
         - containerPort: 9000
