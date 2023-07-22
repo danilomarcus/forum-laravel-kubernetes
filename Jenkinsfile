@@ -38,7 +38,14 @@ pipeline {
                     newWeb.push()
                 }
             }
-        }      
+        }
+        stage('Deploy'){
+            steps{
+                script{
+                    sh 'kubectl set image deployment/forum-app backend=danilomarcus/forum-app:$BUILD_NUMBER --kubeconfig /var/lib/jenkins/.kube/config'
+                }
+            }
+        }   
     }
     post {
         failure {
