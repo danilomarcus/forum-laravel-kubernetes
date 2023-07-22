@@ -15,7 +15,7 @@ spec:
         app: frontend
     spec:
       containers:
-      - name: frontend
+      - name: backend
         image: danilomarcus/forum-web:v1
         ports:
         - containerPort: 80
