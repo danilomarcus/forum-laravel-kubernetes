@@ -5,7 +5,7 @@ pipeline {
         newWeb = ''
     }
     /* insert Declarative Pipeline here */
-   agent master
+   agent { label 'master' }
    stages {
         stage('Prepare environment') {
             steps {
