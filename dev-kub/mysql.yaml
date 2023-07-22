@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: database
+  namespace: develop
   labels:
     app: database
 spec:
@@ -15,6 +16,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pv-claim
+  namespace: develop
   labels:
     app: mysql
 spec:
@@ -29,6 +31,7 @@ apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
   name: mysql
+  namespace: develop
   labels:
     app: mysql
 spec:
@@ -39,6 +42,7 @@ spec:
     type: Recreate
   template:
     metadata:
+      namespace: develop
       labels:
         app: mysql
     spec:

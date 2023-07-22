@@ -40,11 +40,22 @@ pipeline {
                 }
             }
         }
-        stage('Deploy'){
+        stage('Deploy Develop'){
+            when {
+                branch 'develop'
+            }
             steps{
-                script{
-                    sh 'kubectl set image deployment/forum-app backend=danilomarcus/forum-app:$BUILD_NUMBER --kubeconfig /var/lib/jenkins/.kube/config'
-                }
+                sh 'kubectl set image deployment/forum-app backend=danilomarcus/forum-app:$BUILD_NUMBER -n develop --kubeconfig /var/lib/jenkins/.kube/config'
+                sh 'kubectl set image deployment/forum-web frontend=danilomarcus/forum-web:$BUILD_NUMBER -n develop --kubeconfig /var/lib/jenkins/.kube/config'
+            }
+        }
+        stage('Deploy Production'){
+            when {
+                branch 'master'
+            }
+            steps{
+                sh 'kubectl set image deployment/forum-app backend=danilomarcus/forum-app:$BUILD_NUMBER --kubeconfig /var/lib/jenkins/.kube/config'                
+                sh 'kubectl set image deployment/forum-web frontend=danilomarcus/forum-web:$BUILD_NUMBER --kubeconfig /var/lib/jenkins/.kube/config'                
             }
         }   
     }
