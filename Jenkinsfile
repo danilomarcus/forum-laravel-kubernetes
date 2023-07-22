@@ -7,7 +7,7 @@ pipeline {
     agent { label 'master'}
     stages {
         stage('Prepare') {
-            steps {
+            steps{
                 sh 'cp .env.example .env'
                 sh "sed -i 's/DB_HOST.*/DB_HOST=database/g' .env.testing"
                 sh "sed -i 's/DB_USERNAME.*/DB_USERNAME=homestead/g' .env.testing"
@@ -16,8 +16,10 @@ pipeline {
         }
         stage('Build'){
             steps{
-                newApp = docker.build("danilomarcus/forum-app:$BUILD_NUMBER")
-                newWeb = docker.build("danilomarcus/forum-web:$BUILD_NUMBER","-f DockerFile_Nginx .")
+                script{
+                    newApp = docker.build("danilomarcus/forum-app:$BUILD_NUMBER")
+                    newWeb = docker.build("danilomarcus/forum-web:$BUILD_NUMBER","-f DockerFile_Nginx .")
+                }
             }
         }
         stage('Test'){
@@ -30,7 +32,7 @@ pipeline {
         }        
         stage('Push'){
             steps{
-                script {
+                script{
                     docker.withRegistry('',dockerhub)
                     newApp.push()
                     newWeb.push()
