@@ -18,7 +18,7 @@ pipeline {
             steps{
                 script{
                     newApp = docker.build("danilomarcus/forum-app:$BUILD_NUMBER")
-                    newWeb = docker.build("danilomarcus/forum-web:$BUILD_NUMBER","-f DockerFile_Nginx .")
+                    newWeb = docker.build("danilomarcus/forum-web:$BUILD_NUMBER","-f Dockerfile_Nginx .")
                 }
             }
         }
