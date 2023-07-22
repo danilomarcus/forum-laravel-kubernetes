@@ -28,7 +28,8 @@ pipeline {
                 sh "sed -i 's/forum-app.*/forum-app:$BUILD_NUMBER/g' docker-compose.yml"
                 sh "sed -i 's/forum-web.*/forum-web:$BUILD_NUMBER/g' docker-compose.yml"
                 sh "docker compose up -d"
-                sh "echo 'teste executado'"
+                sh "sleep 2s"
+                sh "echo 'teste em execucao'"
                 sh "docker compose down"
             }
         }        
