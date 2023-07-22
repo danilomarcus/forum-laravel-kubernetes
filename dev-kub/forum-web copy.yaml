@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: backend
-        image: jacksonlima91/forum-web:v1
+        image: danilomarcus/forum-web:v1
         ports:
         - containerPort: 80

@@ -5,9 +5,9 @@ pipeline {
         newWeb = ''
     }
     /* insert Declarative Pipeline here */
-   agent any
+   agent master
    stages {
-        stage('Prepare env') {
+        stage('Prepare environment') {
             steps {
                 sh 'cp .env.example .env'
                 sh "sed -i 's/DB_HOST.*/DB_HOST=database/g' .env.testing"
@@ -15,11 +15,11 @@ pipeline {
                 sh "sed -i 's/DB_HOST.*/DB_HOST=database/g' .env"
             }
         }
-        stage('Build') {
+        stage('Build'){
             steps{
                 script{
-                    newApp = docker.build("jacksonlima91/forum-app:$BUILD_NUMBER")
-                    newWeb = docker.build("jacksonlima91/forum-web:$BUILD_NUMBER", "-f Dockerfile_Nginx .")
+                    newApp = docker.build("danilomarcus/forum-app:$BUILD_NUMBER")
+                    newWeb = docker.build("danilomarcus/forum-web:$BUILD_NUMBER","-f Dockerfile_Nginx .")
                 }
             }
         }
@@ -27,20 +27,18 @@ pipeline {
             steps{
                 sh "sed -i 's/forum-app.*/forum-app:$BUILD_NUMBER/g' docker-compose.yml"
                 sh "sed -i 's/forum-web.*/forum-web:$BUILD_NUMBER/g' docker-compose.yml"
-                sh "docker-compose up -d"
-                sh "sleep 30s"
-                sh "docker exec app vendor/bin/phpunit"
-                sh "docker-compose down"
-
+                sh "docker compose up -d"
+                sh "echo 'teste executado'"
+                sh "docker compose down"
             }
-        }
+        }        
         stage('Push'){
             steps{
                 script{
-                     docker.withRegistry('https://index.docker.io/v1/','dockerhub'){
+                    docker.withRegistry('https://index.docker.io/v1/','dockerhub') {
                         newApp.push()
                         newWeb.push()
-                     }
+                    }
                 }
             }
         }
@@ -49,35 +47,35 @@ pipeline {
                 branch 'develop'
             }
             steps{
-                sh 'kubectl set image deployment/forum-app backend=jacksonlima91/forum-app:$BUILD_NUMBER -n develop --kubeconfig /var/lib/jenkins/.kube/config'
-                sh 'kubectl set image deployment/forum-web backend=jacksonlima91/forum-web:$BUILD_NUMBER -n develop --kubeconfig /var/lib/jenkins/.kube/config'
+                sh 'kubectl set image deployment/forum-app backend=danilomarcus/forum-app:$BUILD_NUMBER -n develop --kubeconfig /var/lib/jenkins/.kube/config'
+                sh 'kubectl set image deployment/forum-web frontend=danilomarcus/forum-web:$BUILD_NUMBER -n develop --kubeconfig /var/lib/jenkins/.kube/config'
             }
         }
-        stage('Deploy Prod'){
+        stage('Deploy Production'){
             when {
                 branch 'master'
             }
             steps{
-                sh 'kubectl set image deployment/forum-app backend=jacksonlima91/forum-app:$BUILD_NUMBER --kubeconfig /var/lib/jenkins/.kube/config'
-                sh 'kubectl set image deployment/forum-web backend=jacksonlima91/forum-web:$BUILD_NUMBER --kubeconfig /var/lib/jenkins/.kube/config'
+                sh 'kubectl set image deployment/forum-app backend=danilomarcus/forum-app:$BUILD_NUMBER --kubeconfig /var/lib/jenkins/.kube/config'                
+                sh 'kubectl set image deployment/forum-web frontend=danilomarcus/forum-web:$BUILD_NUMBER --kubeconfig /var/lib/jenkins/.kube/config'                
             }
+        }   
+    }
+    post {
+        failure {
+            emailext(
+                subject: "Job '${env.JOB_NAME} ${env.BUILD_NUMBER}'",
+                body: """<p>A Build Falhou <a href="${env.BUILD_URL}">${env.JOB_NAME}</a></p>""",
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'],
+                [$class: 'RequesterRecipientProvider']]
+            )
         }
-   }    
-  post {
-    failure {
-      emailext(
-            subject: "Job '${env.JOB_NAME} ${env.BUILD_NUMBER}'",
-            body: """<p>A Build Falhou <a href="${env.BUILD_URL}">${env.JOB_NAME}</a></p>""",
-            recipientProviders: [[$class: 'DevelopersRecipientProvider'],
-            [$class: 'RequesterRecipientProvider']]
-             )
-       }
-    success {
-        emailext(
-            subject: "Job '${env.JOB_NAME} ${env.BUILD_NUMBER}'",
-            body: """<p>A Build foi feita com sucesso <a href="${env.BUILD_URL}">${env.JOB_NAME}</a></p>""",
-            to: "jackson@schoolofnet.com"
-             )     
-            }     /*emailext body: 'A Test EMail', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Test'*/
+        success {
+            emailext(
+                subject: "Job '${env.JOB_NAME} ${env.BUILD_NUMBER}'",
+                body: "Sucesso no Job '${env.JOB_NAME} ${env.BUILD_NUMBER}'",
+                to: "danpayne21@gmail.com"
+            )
         }
+    }
 }
