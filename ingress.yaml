@@ -10,10 +10,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - forum.hackathonshift.com.br
+    - danilomarcus.com.br
     secretName: prod-forum-tls
   rules:
-  - host: forum.hackathonshift.com.br
+  - host: danilomarcus.com.br
     http:
       paths:
       - path: /
